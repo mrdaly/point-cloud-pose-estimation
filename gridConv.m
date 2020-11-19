@@ -10,12 +10,13 @@
 % return:
 %   newPoints - mx3, 
 %   newPointsFeatures - mxnumOutputChannels
-function [newPoints, newPointsFeatures] = gridConv(points, pointsFeatures, m, k, voxelsSize, nhood, params)
-    groups = coverageAwareGridQuery(points, m, k, voxelsSize, nhood);
+function [newPoints, newPointsFeatures] = gridConv(points, pointsFeatures, m, k, voxelsSize, nhoodSize, params)
+    groups = coverageAwareGridQuery(points, m, k, voxelsSize, nhoodSize);
     
-    newPoints = zeros([m 3]);
-    numOutputChannels = 0; %TODO get from func params or params MLP output size?
-    newPointsFeatures = zeros([m, numOutputChannels]);
+    newPoints = dlarray(zeros([m 3]));
+    %numOutputChannels = 0; %TODO get from func params or params MLP output size?
+    numOutputChannels = size(params.PointMLP.Perceptron(end).Bias, 1);
+    newPointsFeatures = dlarray(zeros([m, numOutputChannels]));%SHOULD I DO THIS OR CREATE CELL ARRAY AND CONCAT ALL FEATURES AT THE END?... ALSO DATAFORMAT HERE?
     for i = 1:size(groups,1)
         centerPoint = groups{i,1};
         groupPointsIndices = groups{i,2};

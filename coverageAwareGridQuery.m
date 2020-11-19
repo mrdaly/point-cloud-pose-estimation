@@ -3,7 +3,7 @@
 %   m - scalar, number of center points to sample
 %   numVoxels - 1x3
 %   k - scalar, number of neighborhood points for each center point
-%   nhood - scalar, must be odd and >1, defines nhoodxnhoodxnhood neighborhood
+%   nhood - scalar, must be odd, defines nhoodxnhoodxnhood neighborhood
 %   with nhood at center
 %return:
 %   groups - Mx2 cell array containing M groups. Group is cell array
@@ -25,7 +25,8 @@ function [groups] = coverageAwareGridQuery(points, m, k, voxelsSize, nhood) %ren
     end
     
     %sample center voxels using random sampling TODO: implement coverage aware sampling
-    centerVoxelIndices = occupiedIndices(randperm(length(occupiedIndices), m)); %gets linear indices into voxels
+    %centerVoxelIndices = occupiedIndices(randperm(length(occupiedIndices), m)); %gets linear indices into voxels
+    centerVoxelIndices = occupiedIndices(randi(length(occupiedIndices), [1 m])); % changed to allow repetitions
     
     groups = cell([m, 2]);
     for i = 1:length(centerVoxelIndices)
@@ -33,8 +34,7 @@ function [groups] = coverageAwareGridQuery(points, m, k, voxelsSize, nhood) %ren
         nhoodPtIndices = getAllNhoodPointIndices([centerX, centerY, centerZ], voxels, nhood);
         
         % randomly choose k pts from nhood
-        groupPtIndices = nhoodPtIndices(randperm(length(nhoodPtIndices)), k);
-        
+        groupPtIndices = nhoodPtIndices(randperm(length(nhoodPtIndices)), k); %NOW IM NOT SURE IF THIS SHOULD BE RANDOM WITH REPETITIONS ALLOWed?
         % compute center point
         groupPoints = points(groupPtIndices, :);
         groupCenter = pointCentroid(groupPoints);
@@ -44,14 +44,14 @@ function [groups] = coverageAwareGridQuery(points, m, k, voxelsSize, nhood) %ren
     end
     
     
-    %center must be in voxels, nhood must be odd and >1
-    function [nhoodPtIndices] = getAllNhoodPointIndices(center, voxels, nhood)
+    %center must be in voxels, nhood must be odd
+    function [nhoodPtIndices] = getAllNhoodPointIndices(center, voxels, nhoodSize)
         %use meshgrid?
         Xcenter = center(1);
         Ycenter = center(2);
         Zcenter = center(3);
         
-        halfNhood = floor(nhood / 2);
+        halfNhood = floor(nhoodSize / 2);
         Xmin = max(1, Xcenter - halfNhood);
         Xmax = min(size(voxels,1), Xcenter + halfNhood);
         Ymin = max(1, Ycenter - halfNhood);
@@ -60,9 +60,10 @@ function [groups] = coverageAwareGridQuery(points, m, k, voxelsSize, nhood) %ren
         Zmax = min(size(voxels,3), Zcenter + halfNhood);
         
         nhoodPtIndices = []; %ENFORCE max num of points per voxel here???? PROBABLY YES
-        for x = [XMin:(Xcenter - 1), (Xcenter + 1):XMax] %ONLY LOOK IN OCCUPIED VOXELS HERE? OR JUST LOOK AT ALL IN NHOOD? probs just all
-            for y = [YMin:(Ycenter - 1), (Ycenter + 1):YMax]
-                for z = [ZMin:(Zcenter - 1), (Zcenter + 1):ZMax]
+        %TODO: probably can just index nhood and aggregate indices
+        for x = [XMin:XMax] %ONLY LOOK IN OCCUPIED VOXELS HERE? OR JUST LOOK AT ALL IN NHOOD? probs just all
+            for y = [YMin:YMax]
+                for z = [ZMin:ZMax]
                     indices = voxels{x, y, z};
                     nhoodPtIndices = [nhoodPtIndices indices'];
                 end
