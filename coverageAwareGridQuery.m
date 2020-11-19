@@ -12,6 +12,7 @@
 %             pointsIndices is 1xk array of integer indices into given
 %             point cloud. need indices b\c we will also need to index into
 %             the features for those points
+%SPLIT UP GROUPS INTO TWO OUTPUT PARAMS? CENTERS AND GROUPPOINTSINDICES?
 function [groups] = coverageAwareGridQuery(points, m, k, voxelsSize, nhood) %rename numVoxels to voxelsSize?
     ptCloud = pointCloud(extractdata(points));
     voxels = pcbin(ptCloud, voxelsSize); %in voxelizing, in the paper they only add up to a certain number of points for each voxel, here we add all points in the voxel to the voxel
