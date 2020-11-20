@@ -61,6 +61,11 @@ classdef ITOPPointCloudDatastore < matlab.io.Datastore
             labels = labels';
             labels = normalizePoints(labels,maxes,mins);
             
+            if canUseGPU
+               ptCloud = gpuArray(ptCloud);
+               labels = gpuArray(labels);
+            end
+            
             %create  dlarrays and return
             dlX = dlarray(ptCloud, 'SC');
             dlY = dlarray(labels, 'SC');
