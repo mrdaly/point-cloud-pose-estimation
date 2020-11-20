@@ -14,7 +14,7 @@ function [centerFeatures] = gridContextAggregation(center, nodePoints, nodeFeatu
     numNodes = length(nodePoints);
     %numOutputChannels = 0; %TODO get from func params or params MLP output size?
     numOutputChannels = size(params.PointMLP.Perceptron(end).Bias, 1);
-    nodeContributions = dlarray(zeros(numNodes, numOutputChannels)); %features each node will contribute to center features DATAFORMAT HERE??
+    nodeContributions = dlarray(zeros(numNodes, numOutputChannels), 'SC'); %features each node will contribute to center features DATAFORMAT HERE??
     
     for i = 1:numNodes
         newNodeFeatures = sharedMLP(nodeFeatures(i,:), params.PointMLP.Perceptron);%TODO

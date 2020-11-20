@@ -61,9 +61,9 @@ function [groups] = coverageAwareGridQuery(points, m, k, voxelsSize, nhood) %ren
         
         nhoodPtIndices = []; %ENFORCE max num of points per voxel here???? PROBABLY YES
         %TODO: probably can just index nhood and aggregate indices
-        for x = [XMin:XMax] %ONLY LOOK IN OCCUPIED VOXELS HERE? OR JUST LOOK AT ALL IN NHOOD? probs just all
-            for y = [YMin:YMax]
-                for z = [ZMin:ZMax]
+        for x = XMin:XMax %ONLY LOOK IN OCCUPIED VOXELS HERE? OR JUST LOOK AT ALL IN NHOOD? probs just all
+            for y = YMin:YMax
+                for z = ZMin:ZMax
                     indices = voxels{x, y, z};
                     nhoodPtIndices = [nhoodPtIndices indices'];
                 end
