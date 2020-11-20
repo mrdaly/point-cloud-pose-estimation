@@ -48,7 +48,7 @@ for epoch = 1:numEpochs
         [gradients, loss] = dlfeval(@modelGradients, XTrain, YTrain, modelParameters);
         
         %update with adam
-        [modelParameters, avgGradients, avgSquaredGradients] = adamupdate(modelParameters, ...
+        [modelParameters, avgGradients, avgSquaredGradients] = adamupdate(modelParameters, gradients, ...
             avgGradients, avgSquaredGradients, iteration);
         
         if iteration == 1 || mod(iteration, validationAndPrintFrequency) == 0          

@@ -34,7 +34,8 @@ function [groups] = coverageAwareGridQuery(points, m, k, voxelsSize, nhood) %ren
         nhoodPtIndices = getAllNhoodPointIndices([centerX, centerY, centerZ], voxels, nhood);
         
         % randomly choose k pts from nhood
-        groupPtIndices = nhoodPtIndices(randperm(length(nhoodPtIndices)), k); %NOW IM NOT SURE IF THIS SHOULD BE RANDOM WITH REPETITIONS ALLOWed?
+        numGroupPoints = min(k, length(nhoodPtIndices));
+        groupPtIndices = nhoodPtIndices(randperm(length(nhoodPtIndices), numGroupPoints)); %NOW IM NOT SURE IF THIS SHOULD BE RANDOM WITH REPETITIONS ALLOWed?
         % compute center point
         groupPoints = points(groupPtIndices, :);
         groupCenter = pointCentroid(groupPoints);
@@ -61,9 +62,9 @@ function [groups] = coverageAwareGridQuery(points, m, k, voxelsSize, nhood) %ren
         
         nhoodPtIndices = []; %ENFORCE max num of points per voxel here???? PROBABLY YES
         %TODO: probably can just index nhood and aggregate indices
-        for x = XMin:XMax %ONLY LOOK IN OCCUPIED VOXELS HERE? OR JUST LOOK AT ALL IN NHOOD? probs just all
-            for y = YMin:YMax
-                for z = ZMin:ZMax
+        for x = Xmin:Xmax %ONLY LOOK IN OCCUPIED VOXELS HERE? OR JUST LOOK AT ALL IN NHOOD? probs just all
+            for y = Ymin:Ymax
+                for z = Zmin:Zmax
                     indices = voxels{x, y, z};
                     nhoodPtIndices = [nhoodPtIndices indices'];
                 end

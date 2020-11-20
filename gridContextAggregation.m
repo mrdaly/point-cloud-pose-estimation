@@ -11,9 +11,9 @@
 %       add context pooling / add semantic relationship to edge attention
 %       is geometric relation right?
 function [centerFeatures] = gridContextAggregation(center, nodePoints, nodeFeatures, params)
-    numNodes = length(nodePoints);
+    numNodes = size(nodePoints, 1);
     %numOutputChannels = 0; %TODO get from func params or params MLP output size?
-    numOutputChannels = size(params.PointMLP.Perceptron(end).Bias, 1);
+    numOutputChannels = size(params.PointMLP.Perceptron(end).Conv.Bias, 1);
     nodeContributions = dlarray(zeros(numNodes, numOutputChannels), 'SC'); %features each node will contribute to center features DATAFORMAT HERE??
     
     for i = 1:numNodes

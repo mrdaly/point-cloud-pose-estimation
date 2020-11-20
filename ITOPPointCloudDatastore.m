@@ -33,7 +33,7 @@ classdef ITOPPointCloudDatastore < matlab.io.Datastore
         end
         
         function [data, info] = read(ds)
-            if ~hasdata(this)
+            if ~hasdata(ds)
                 error('Reached end of data. Reset datastore.');
             end
             info = struct;
