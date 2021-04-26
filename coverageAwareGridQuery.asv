@@ -11,42 +11,41 @@
 %               cloud. need indices b/c we'll also need to index into the
 %               features for those points
 %   %%TODO: add center weight to be returned
-function [centers, pointIndices] = coverageAwareGridQuery(points, m, k, voxelsSize, nhood)
+function [groups] = coverageAwareGridQuery(points, m, k, voxelsSize, nhood) %rename numVoxels to voxelsSize?
     numBatches = size(points,3);
     centers = dlarray(zeros([m,3,numBatches]),'SCB');
     pointIndices = zeros([m,k,numBatches]);
     for b = 1:numBatches
     
-        ptCloud = pointCloud(extractdata(points(:,:,b)));
-        voxels = pcbin(ptCloud, voxelsSize); %in voxelizing, in the paper they only add up to a certain number of points for each voxel, here we add all points in the voxel to the voxel
-        %get occupied voxels   TODO: edit pcbin.m to return indices of occupied bins
-        occupiedIndices = [];
-        for i = 1:length(voxels(:))
-            if ~isempty(voxels{i})
-                occupiedIndices = [occupiedIndices i];
-            end
+    ptCloud = pointCloud(extractdata(points(:,:,b)));
+    voxels = pcbin(ptCloud, voxelsSize); %in voxelizing, in the paper they only add up to a certain number of points for each voxel, here we add all points in the voxel to the voxel
+    %get occupied voxels   TODO: edit pcbin.m to return indices of occupied bins
+    occupiedIndices = [];
+    for i = 1:length(voxels(:))
+        if ~isempty(voxels{i})
+            occupiedIndices = [occupiedIndices i];
         end
-
-        %sample center voxels using random sampling TODO: implement coverage aware sampling
-        %centerVoxelIndices = occupiedIndices(randperm(length(occupiedIndices), m)); %gets linear indices into voxels
-        centerVoxelIndices = occupiedIndices(randi(length(occupiedIndices), [1 m])); % changed to allow repetitions
-
-        for i = 1:length(centerVoxelIndices)
-            [centerX, centerY, centerZ] = ind2sub(voxelsSize, centerVoxelIndices(i));
-            nhoodPtIndices = getAllNhoodPointIndices([centerX, centerY, centerZ], voxels, nhood);
-
-            % randomly choose k pts from nhood
-            numGroupPoints = min(k, length(nhoodPtIndices));
-            groupPtIndices = nhoodPtIndices(randperm(length(nhoodPtIndices), numGroupPoints)); %NOW IM NOT SURE IF THIS SHOULD BE RANDOM WITH REPETITIONS ALLOWed?
-            % compute center point
-            groupPoints = points(groupPtIndices, :);
-            groupCenter = pointCentroid(groupPoints);
-
-            centers(i,:,b) = groupCenter;
-            pointIndices(i,:,b) = groupPtIndices;
-        end
-
     end
+    
+    %sample center voxels using random sampling TODO: implement coverage aware sampling
+    %centerVoxelIndices = occupiedIndices(randperm(length(occupiedIndices), m)); %gets linear indices into voxels
+    centerVoxelIndices = occupiedIndices(randi(length(occupiedIndices), [1 m])); % changed to allow repetitions
+    
+    for i = 1:length(centerVoxelIndices)
+        [centerX, centerY, centerZ] = ind2sub(voxelsSize, centerVoxelIndices(i));
+        nhoodPtIndices = getAllNhoodPointIndices([centerX, centerY, centerZ], voxels, nhood);
+        
+        % randomly choose k pts from nhood
+        numGroupPoints = min(k, length(nhoodPtIndices));
+        groupPtIndices = nhoodPtIndices(randperm(length(nhoodPtIndices), numGroupPoints)); %NOW IM NOT SURE IF THIS SHOULD BE RANDOM WITH REPETITIONS ALLOWed?
+        % compute center point
+        groupPoints = points(groupPtIndices, :);
+        groupCenter = pointCentroid(groupPoints);
+        
+        centers(i,:,b) = groupCenter;
+        pointIndices(i,:,b) = groupPtIndices;
+    end
+    
     
     %center must be in voxels, nhood must be odd
     function [nhoodPtIndices] = getAllNhoodPointIndices(center, voxels, nhoodSize)

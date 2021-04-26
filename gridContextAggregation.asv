@@ -20,9 +20,9 @@ function [centerFeatures] = gridContextAggregation(center, nodePoints, nodeFeatu
     for i = 1:numNodes
         newNodeFeatures = sharedMLP(nodeFeatures(i,:,:), params.PointMLP.Perceptron);%TODO
         
-        edgeFeat = geoEdgeAttention(center, nodePoints(i,:,:), params.EdgeMLP);
+        edgeFeat = geoEdgeAttention(center, nodePoints(i,:), params.EdgeMLP);
         nodeContribution = newNodeFeatures .* edgeFeat;
-        nodeContributions(i,:,:) = nodeContribution;
+        nodeContributions(i,:) = nodeContribution;
     end
     centerFeatures = maxpool(nodeContributions, 'global'); %MIGHT NEED DATAFORMAT    
         

@@ -26,13 +26,12 @@ function [newPoints, newPointsFeatures] = gridConv(points, pointsFeatures, m, k,
         nodePoints = zeros([k,3,numBatches]);
         nodeFeatures = zeros([k,numInputFeatures,numBatches]);
         for b = 1:numBatches
-            nodePoints(:,:,b) = points(groupPointsIndices,:);
-            nodeFeatures(:,:,b) = pointsFeatures(groupPointsIndices,:);
+            
         end 
         
         pointFeatures = gridContextAggregation(centerPoint, ...
-                                               nodePoints, ...
-                                               nodeFeatures, ...
+                                               points(groupPointsIndices,:), ...
+                                               pointsFeatures(groupPointsIndices, :), ...
                                                params);
         newPoints(i,:) = centerPoint;
         newPointsFeatures(i,:) = pointFeatures;

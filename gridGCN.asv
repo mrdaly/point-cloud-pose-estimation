@@ -3,7 +3,7 @@
 %   params - learnable parameters, must have GridConv1, GridConv2,
 %           GridConv3, FC1, FC2
 % return:
-%   dlY - 45xB, points for pose
+%   dlY - 15x3xB, points for pose
 %NOTE: fullly connected layers may not be accurate to paper, tried to
 %figure it out from paper and other point cloud dl papers
 function [dlY] = gridGCN(dlX, params)
@@ -23,5 +23,6 @@ function [dlY] = gridGCN(dlX, params)
     dlY = fullyconnect(dlY, params.FC1.Weights, params.FC1.Bias); %DATA FORMAT??
     
     dlY = fullyconnect(dlY, params.FC2.Weights, params.FC2.Bias);
-   
+    
+    dlY = reshape(dlY, [15, 3]);
 end
