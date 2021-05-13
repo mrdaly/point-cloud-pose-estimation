@@ -60,6 +60,7 @@ classdef ITOPPointCloudDatastore < matlab.io.Datastore
             labels = h5read(ds.LabelsFile, '/real_world_coordinates', [1 1 data_idx], [3 15 1]);
             labels = labels';
             labels = normalizePoints(labels,maxes,mins);
+            labels = reshape(labels',[45 1]);
             
             if canUseGPU
                ptCloud = gpuArray(ptCloud);
@@ -68,7 +69,7 @@ classdef ITOPPointCloudDatastore < matlab.io.Datastore
             
             %create  dlarrays and return
             dlX = dlarray(ptCloud, 'SC');
-            dlY = dlarray(labels, 'SC');
+            dlY = dlarray(labels, 'C');
             data{1} = dlX;
             data{2} = dlY;
             data{3} = maxes;
