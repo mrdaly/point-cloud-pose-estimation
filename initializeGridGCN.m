@@ -18,9 +18,9 @@ function [parameters] = initializeGridGCN()
     
     parameters.GridConv3 = initializeGridConv(pointMLP3Channels, edgeMLP3Channels);
     
-    parameters.FC1.Weights = dlarray(initializeWeightsHe([fc1OutputChannelSize, fc1InputChannelSize]));
-    parameters.FC1.Bias = dlarray(zeros(fc1OutputChannelSize, 1, "single")); %IS SINGLE NECESSARY??
+    parameters.FC1.learnables{1} = dlarray(initializeWeightsHe([fc1OutputChannelSize, fc1InputChannelSize]));
+    parameters.FC1.learnables{2} = dlarray(zeros(fc1OutputChannelSize, 1, "single")); %IS SINGLE NECESSARY??
     
-    parameters.FC2.Weights = dlarray(initializeWeightsHe([fc2OutputChannelSize, fc2InputChannelSize]));
-    parameters.FC2.Bias = dlarray(zeros(fc2OutputChannelSize, 1, "single"));
+    parameters.FC2.learnables{1} = dlarray(initializeWeightsHe([fc2OutputChannelSize, fc2InputChannelSize]));
+    parameters.FC2.learnables{2} = dlarray(zeros(fc2OutputChannelSize, 1, "single"));
 end

@@ -1,4 +1,4 @@
-classdef ITOPPointCloudDatastore < matlab.io.Datastore
+classdef ITOPPointCloudDatastore < matlab.io.Datastore & matlab.io.datastore.Shuffleable
 
     properties(SetAccess = protected)
         NumObservations
@@ -32,6 +32,12 @@ classdef ITOPPointCloudDatastore < matlab.io.Datastore
             ds.CurrentFileIndex = 1;
         end
         
+        function dsNew = shuffle(ds)
+            dsNew = copy(ds);
+            shuffledIdxs = randperm(length(dsNew.Indices));
+            dsNew.Indices = dsNew.Indices(shuffledIdxs);
+        end
+        
         function [data, info] = read(ds)
             if ~hasdata(ds)
                 error('Reached end of data. Reset datastore.');
@@ -62,16 +68,8 @@ classdef ITOPPointCloudDatastore < matlab.io.Datastore
             labels = normalizePoints(labels,maxes,mins);
             labels = reshape(labels',[45 1]);
             
-            if canUseGPU
-               ptCloud = gpuArray(ptCloud);
-               labels = gpuArray(labels);
-            end
-            
-            %create  dlarrays and return
-            dlX = dlarray(ptCloud, 'SC');
-            dlY = dlarray(labels, 'C');
-            data{1} = dlX;
-            data{2} = dlY;
+            data{1} = ptCloud;
+            data{2} = labels;
             data{3} = maxes;
             data{4} = mins;           
         end

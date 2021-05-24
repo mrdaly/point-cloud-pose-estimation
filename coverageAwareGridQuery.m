@@ -37,7 +37,8 @@ function [centers, pointIndices] = coverageAwareGridQuery(points, m, k, voxelsSi
 
             % randomly choose k pts from nhood
             numGroupPoints = min(k, length(nhoodPtIndices));
-            groupPtIndices = nhoodPtIndices(randperm(length(nhoodPtIndices), numGroupPoints)); %NOW IM NOT SURE IF THIS SHOULD BE RANDOM WITH REPETITIONS ALLOWed?
+%             groupPtIndices = nhoodPtIndices(randperm(length(nhoodPtIndices), numGroupPoints)); %NOW IM NOT SURE IF THIS SHOULD BE RANDOM WITH REPETITIONS ALLOWed?
+            groupPtIndices = nhoodPtIndices(randi(length(nhoodPtIndices), [k,1]));
             % compute center point
             groupPoints = points(groupPtIndices, :);
             groupCenter = pointCentroid(groupPoints);

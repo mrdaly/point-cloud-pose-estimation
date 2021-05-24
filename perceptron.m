@@ -1,8 +1,8 @@
 %TODO add batch norm
 function [dlY] = perceptron(dlX,parameters)
     % Convolution.
-    W = parameters.Conv.Weights;
-    B = parameters.Conv.Bias;
+    W = parameters.learnables{1};
+    B = parameters.learnables{2};
     dlY = dlconv(dlX,W,B);
 
     % ReLU.

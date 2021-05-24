@@ -6,6 +6,6 @@ function [gradients, loss] = modelGradients(X,Y,parameters) %TODO add accuracy t
     YPred = gridGCN(X, parameters);
     
     %compute loss
-    loss = mse(YPred, Y, 'DataFormat', 'SC');
+    loss = mse(YPred, Y);
     gradients = dlgradient(loss,parameters);
 end

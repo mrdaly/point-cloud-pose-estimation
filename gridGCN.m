@@ -20,8 +20,8 @@ function [dlY] = gridGCN(dlX, params)
     
     [~, dlY] = gridConv(newPoints, dlY, M(3), K(3), voxelsSizes(3,:), nhoodSizes(3), params.GridConv3);
     
-    dlY = fullyconnect(dlY, params.FC1.Weights, params.FC1.Bias); %DATA FORMAT??
+    dlY = fullyconnect(dlY, params.FC1.learnables{1}, params.FC1.learnables{2}); %DATA FORMAT??
     
-    dlY = fullyconnect(dlY, params.FC2.Weights, params.FC2.Bias);
+    dlY = fullyconnect(dlY, params.FC2.learnables{1}, params.FC2.learnables{2});
    
 end

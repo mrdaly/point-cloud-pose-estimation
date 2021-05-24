@@ -13,12 +13,12 @@
 function [centerFeatures] = gridContextAggregation(center, nodePoints, nodeFeatures, params)
     numNodes = size(nodePoints, 1);
     %numOutputChannels = 0; %TODO get from func params or params MLP output size?
-    numOutputChannels = size(params.PointMLP.Perceptron(end).Conv.Bias, 1);
+    numOutputChannels = size(params.PointMLP.Perceptron2.learnables{2}, 1);
     numBatches = size(center, 3);
     nodeContributions = dlarray(zeros(numNodes, numOutputChannels, numBatches), 'SCB'); %features each node will contribute to center features DATAFORMAT HERE??
     
     for i = 1:numNodes
-        newNodeFeatures = sharedMLP(nodeFeatures(i,:,:), params.PointMLP.Perceptron);%TODO
+        newNodeFeatures = sharedMLP(nodeFeatures(i,:,:), params.PointMLP);%TODO
         
         edgeFeat = geoEdgeAttention(center, nodePoints(i,:,:), params.EdgeMLP);
         nodeContribution = newNodeFeatures .* edgeFeat;
@@ -29,6 +29,6 @@ function [centerFeatures] = gridContextAggregation(center, nodePoints, nodeFeatu
         
     
     function [edgeFeature] = geoEdgeAttention(center, nodePoint, params)
-        edgeFeature = sharedMLP(center - nodePoint, params.Perceptron);
+        edgeFeature = sharedMLP(center - nodePoint, params);
     end
 end
