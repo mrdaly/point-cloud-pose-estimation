@@ -16,25 +16,26 @@ function [newPoints, newPointsFeatures] = gridConv(points, pointsFeatures, m, k,
     numBatches = size(points,3);
     newPoints = dlarray(zeros([m 3 numBatches]), 'SCB');
     %numOutputChannels = 0; %TODO get from func params or params MLP output size?
-    numOutputChannels = size(params.PointMLP.Perceptron(end).Conv.Bias, 1);
+    numOutputChannels = size(params.PointMLP.Perceptron2.learnables{2}, 1);
     newPointsFeatures = dlarray(zeros([m, numOutputChannels numBatches]), 'SCB');%SHOULD I DO THIS OR CREATE CELL ARRAY AND CONCAT ALL FEATURES AT THE END?... ALSO DATAFORMAT HERE?
     for i = 1:m
         centerPoint = centers(i,:,:);
-        groupPointsIndices = pointIndices(i,:,:); %1xkxB
+        groupPointsIndices = squeeze(pointIndices(i,:,:)); %kxB
         
-        numInputFeatures = size(pointFeatures,2);
-        nodePoints = zeros([k,3,numBatches]);
-        nodeFeatures = zeros([k,numInputFeatures,numBatches]);
+        numInputFeatures = size(pointsFeatures,2);
+        nodePoints = dlarray(zeros([k,3,numBatches]), 'SCB');
+        nodeFeatures = dlarray(zeros([k,numInputFeatures,numBatches]), 'SCB');
         for b = 1:numBatches
-            nodePoints(:,:,b) = points(groupPointsIndices,:);
-            nodeFeatures(:,:,b) = pointsFeatures(groupPointsIndices,:);
+            nodePoints(:,:,b) = points(groupPointsIndices(:,b),:,b);%is this right??
+            nodeFeatures(:,:,b) = pointsFeatures(groupPointsIndices(:,b),:,b);
         end 
         
-        pointFeatures = gridContextAggregation(centerPoint, ...
+        accfun = dlaccelerate(@gridContextAggregation);
+        pointFeatures = accfun(centerPoint, ...
                                                nodePoints, ...
                                                nodeFeatures, ...
                                                params);
-        newPoints(i,:) = centerPoint;
-        newPointsFeatures(i,:) = pointFeatures;
+        newPoints(i,:,:) = centerPoint;
+        newPointsFeatures(i,:,:) = pointFeatures;
     end
 end
